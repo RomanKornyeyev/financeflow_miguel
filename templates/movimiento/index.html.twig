@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mis Movimientos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Mis Movimientos</h1>
+        <a href="{{ path('movimiento_editar') }}" class="btn btn-success">+ Nuevo Movimiento</a>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+    {% if pager.nbResults == 0 %}
+        <div class="alert alert-info">No tienes movimientos registrados aún.</div>
+    {% else %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Categoría</th>
+                    <th>Concepto</th>
+                    <th>Importe</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movimiento in pager.currentPageResults %}
+                    <tr>
+                        <td>{{ movimiento.fechaMovimiento|date('d/m/Y') }}</td>
+                        <td>{{ movimiento.tipoTransaccion.value|capitalize }}</td>
+                        <td>{{ movimiento.categoria.value|replace({'_': ' '})|capitalize }}</td>
+                        <td>{{ movimiento.concepto }}</td>
+                        <td>
+                            {% if movimiento.tipoTransaccion.value == 'gasto' %}
+                                -{{ movimiento.importe }} €
+                            {% else %}
+                                +{{ movimiento.importe }} €
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('movimiento_editar', {id: movimiento.id}) }}" class="btn btn-sm btn-primary">Editar</a>
+                            <form method="post" action="{{ path('movimiento_eliminar', {id: movimiento.id}) }}" style="display:inline-block;" onsubmit="return confirm('¿Seguro que quieres eliminar este movimiento?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('csrf_eliminar_movimiento' ~ movimiento.id) }}">
+                                <button class="btn btn-sm btn-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {# 📜 Sección de paginación #}
+        <div class="navigation d-flex justify-content-center mt-4">
+            {{ pagerfanta(pager, {
+                proximity: 1,
+                prev_message: 'Anterior',
+                next_message: 'Siguiente',
+            }) }}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

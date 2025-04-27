@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if isEdit %}
+        Editar Movimiento
+    {% else %}
+        Nuevo Movimiento
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>
+            {% if isEdit %}
+                Editar Movimiento
+            {% else %}
+                Nuevo Movimiento
+            {% endif %}
+        </h1>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {{ form_start(form) }}
+            {{ form_row(form.tipoTransaccion) }}
+            {{ form_row(form.categoria) }}
+            {{ form_row(form.importe) }}
+            {{ form_row(form.concepto) }}
+            {{ form_row(form.descripcion) }}
+            {{ form_row(form.fechaMovimiento) }}
+            <button type="submit" class="btn btn-primary mt-3">
+                {% if isEdit %}
+                    Actualizar Movimiento
+                {% else %}
+                    Crear Movimiento
+                {% endif %}
+            </button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
