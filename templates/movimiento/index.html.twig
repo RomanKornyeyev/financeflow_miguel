@@ -9,12 +9,12 @@
         <a href="{{ path('movimiento_editar') }}" class="btn btn-success">+ Nuevo Movimiento</a>
     </div>
 
-    {% for message in app.flashes('success') %}
+    {# {% for message in app.flashes('success') %}
         <div class="alert alert-success">{{ message }}</div>
     {% endfor %}
     {% for message in app.flashes('danger') %}
         <div class="alert alert-danger">{{ message }}</div>
-    {% endfor %}
+    {% endfor %} #}
 
     {% if pager.nbResults == 0 %}
         <div class="alert alert-info">No tienes movimientos registrados aún.</div>
