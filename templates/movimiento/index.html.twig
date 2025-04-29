@@ -9,12 +9,23 @@
         <a href="{{ path('movimiento_editar') }}" class="btn btn-success">+ Nuevo Movimiento</a>
     </div>
 
-    {# {% for message in app.flashes('success') %}
-        <div class="alert alert-success">{{ message }}</div>
-    {% endfor %}
-    {% for message in app.flashes('danger') %}
-        <div class="alert alert-danger">{{ message }}</div>
-    {% endfor %} #}
+    {{ form_start(form, {'attr': {'class': 'mb-3'}}) }}
+        <div class="row">
+            <div class="col-md-2">{{ form_row(form.desde) }}</div>
+            <div class="col-md-2">{{ form_row(form.hasta) }}</div>
+            <div class="col-md-2">{{ form_row(form.tipoTransaccion) }}</div>
+            <div class="col-md-2">{{ form_row(form.categoria) }}</div>
+            <div class="col-md-2">{{ form_row(form.concepto) }}</div>
+            <div class="col-md-2">{{ form_row(form.descripcion) }}</div>
+        </div>
+
+        {{ form_widget(form.page) }} {# campo oculto para mantener página si hiciera falta #}
+
+        <div class="mt-2 d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a href="{{ path('movimiento_index') }}" class="btn btn-outline-primary">Resetear Filtros</a>
+        </div>
+    {{ form_end(form) }}
 
     {% if pager.nbResults == 0 %}
         <div class="alert alert-info">No tienes movimientos registrados aún.</div>

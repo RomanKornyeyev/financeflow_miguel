@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Movimiento;
 use App\Form\MovimientoType;
+use App\Form\MovimientoFilterType;
 use Doctrine\ORM\EntityManagerInterface;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
@@ -19,28 +20,31 @@ class MovimientoController extends AbstractController
     #[Route('/', name: 'movimiento_index')]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $form = $this->createForm(MovimientoFilterType::class);
+        $form->handleRequest($request);
+    
+        $filtros = $form->getData() ?? []; // Esto te da un array con los valores GET
+    
         $queryBuilder = $entityManager->getRepository(Movimiento::class)
-            ->createQueryBuilder('m')
-            ->where('m.usuario = :usuario')
-            ->setParameter('usuario', $this->getUser())
-            ->orderBy('m.fechaMovimiento', 'DESC');
-
+            ->createFilteredQueryBuilder($this->getUser(), $filtros); // Método custom que haremos en el repo
+    
         $adapter = new QueryAdapter($queryBuilder);
-        $pagerfanta = new Pagerfanta($adapter);
-
-        $pagerfanta->setMaxPerPage(5); // Número de movimientos por página
+        $pager = new Pagerfanta($adapter);
+    
+        $pager->setMaxPerPage(1);
         $page = $request->query->getInt('page', 1);
-
+    
         try {
-            $pagerfanta->setCurrentPage($page);
+            $pager->setCurrentPage($page);
         } catch (OutOfRangeCurrentPageException $e) {
             return $this->redirectToRoute('movimiento_index', ['page' => 1]);
         }
-
+    
         return $this->render('movimiento/index.html.twig', [
-            'pager' => $pagerfanta,
+            'pager' => $pager,
+            'form' => $form->createView(),
         ]);
-    }
+    }    
 
     #[Route('/editar/{id}', name: 'movimiento_editar')]
     public function edit(Request $request, EntityManagerInterface $entityManager, ?int $id = null): Response
