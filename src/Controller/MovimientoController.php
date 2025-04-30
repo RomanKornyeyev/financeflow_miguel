@@ -22,16 +22,19 @@ class MovimientoController extends AbstractController
     {
         $form = $this->createForm(MovimientoFilterType::class);
         $form->handleRequest($request);
-    
-        $filtros = $form->getData() ?? []; // Esto te da un array con los valores GET
-    
+
+        $filtros = $form->getData() ?? [];
+
+        $sort = $request->query->get('sort');
+        $dir = $request->query->get('dir');
+
         $queryBuilder = $entityManager->getRepository(Movimiento::class)
-            ->createFilteredQueryBuilder($this->getUser(), $filtros); // Método custom que haremos en el repo
+            ->createFilteredQueryBuilder($this->getUser(), $filtros, $sort, $dir);
     
         $adapter = new QueryAdapter($queryBuilder);
         $pager = new Pagerfanta($adapter);
     
-        $pager->setMaxPerPage(1);
+        $pager->setMaxPerPage(2);
         $page = $request->query->getInt('page', 1);
     
         try {

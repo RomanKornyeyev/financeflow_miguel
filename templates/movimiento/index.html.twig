@@ -18,9 +18,7 @@
             <div class="col-md-2">{{ form_row(form.concepto) }}</div>
             <div class="col-md-2">{{ form_row(form.descripcion) }}</div>
         </div>
-
-        {{ form_widget(form.page) }} {# campo oculto para mantener página si hiciera falta #}
-
+        
         <div class="mt-2 d-flex justify-content-between">
             <button type="submit" class="btn btn-primary">Filtrar</button>
             <a href="{{ path('movimiento_index') }}" class="btn btn-outline-primary">Resetear Filtros</a>
@@ -33,11 +31,26 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Fecha</th>
-                    <th>Tipo</th>
-                    <th>Categoría</th>
-                    <th>Concepto</th>
-                    <th>Importe</th>
+                    {% set currentSort = app.request.get('sort') ?? '' %}
+                    {% set currentDir = app.request.get('dir') ?? 'desc' %}
+
+                    {% macro sort_link(label, field, currentSort, currentDir) %}
+                        {% set newDir = (currentSort == field and currentDir == 'asc') ? 'desc' : 'asc' %}
+                        <a href="{{ path('movimiento_index', app.request.query.all | merge({'sort': field, 'dir': newDir})) }}">
+                            {{ label }}
+                            {% if currentSort == field %}
+                                <i class="fa-solid fa-arrow-{{ currentDir == 'asc' ? 'up' : 'down' }}"></i>
+                            {% endif %}
+                        </a>
+                    {% endmacro %}
+
+                    {% import _self as self %}
+
+                    <th>{{ self.sort_link('Fecha', 'fechaMovimiento', currentSort, currentDir) }}</th>
+                    <th>{{ self.sort_link('Tipo', 'tipoTransaccion', currentSort, currentDir) }}</th>
+                    <th>{{ self.sort_link('Categoría', 'categoria', currentSort, currentDir) }}</th>
+                    <th>{{ self.sort_link('Concepto', 'concepto', currentSort, currentDir) }}</th>
+                    <th>{{ self.sort_link('Importe', 'importe', currentSort, currentDir) }}</th>
                     <th>Acciones</th>
                 </tr>
             </thead>

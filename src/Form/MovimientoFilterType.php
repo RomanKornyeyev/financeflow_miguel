@@ -51,11 +51,11 @@ class MovimientoFilterType extends AbstractType
           'required' => false,
           'placeholder' => 'Todas',
           'label' => 'Categoría',
-        ])
-        ->add('page', HiddenType::class, [
-          'mapped' => false,
-          'required' => false,
         ]);
+        // ->add('page', HiddenType::class, [
+        //   'mapped' => false,
+        //   'required' => false,
+        // ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

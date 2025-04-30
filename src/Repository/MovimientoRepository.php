@@ -43,43 +43,53 @@ class MovimientoRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function createFilteredQueryBuilder(Usuario $usuario, array $filters): QueryBuilder
+    public function createFilteredQueryBuilder(Usuario $usuario, array $filters = [], ?string $sort = null, ?string $dir = null): QueryBuilder
     {
         $qb = $this->createQueryBuilder('m')
             ->where('m.usuario = :usuario')
-            ->setParameter('usuario', $usuario)
-            ->orderBy('m.fechaMovimiento', 'DESC');
-
+            ->setParameter('usuario', $usuario);
+    
+        // Aplicar filtros como antes
         if (!empty($filters['desde'])) {
             $qb->andWhere('m.fechaMovimiento >= :desde')
-            ->setParameter('desde', $filters['desde']);
+               ->setParameter('desde', $filters['desde']);
         }
-
+    
         if (!empty($filters['hasta'])) {
             $qb->andWhere('m.fechaMovimiento <= :hasta')
-            ->setParameter('hasta', $filters['hasta']);
+               ->setParameter('hasta', $filters['hasta']);
         }
-
+    
         if (!empty($filters['concepto'])) {
             $qb->andWhere('LOWER(m.concepto) LIKE :concepto')
-            ->setParameter('concepto', '%' . strtolower($filters['concepto']) . '%');
+               ->setParameter('concepto', '%' . strtolower($filters['concepto']) . '%');
         }
-
+    
         if (!empty($filters['descripcion'])) {
             $qb->andWhere('LOWER(m.descripcion) LIKE :descripcion')
-            ->setParameter('descripcion', '%' . strtolower($filters['descripcion']) . '%');
+               ->setParameter('descripcion', '%' . strtolower($filters['descripcion']) . '%');
         }
-
+    
         if (!empty($filters['tipoTransaccion'])) {
             $qb->andWhere('m.tipoTransaccion = :tipoTransaccion')
-            ->setParameter('tipoTransaccion', $filters['tipoTransaccion']);
+               ->setParameter('tipoTransaccion', $filters['tipoTransaccion']);
         }
-
+    
         if (!empty($filters['categoria'])) {
             $qb->andWhere('m.categoria = :categoria')
-            ->setParameter('categoria', $filters['categoria']);
+               ->setParameter('categoria', $filters['categoria']);
         }
-
+    
+        // 🧠 Ordenamiento dinámico
+        $allowedSorts = ['fechaMovimiento', 'importe', 'concepto'];
+        $direction = strtolower($dir) === 'asc' ? 'ASC' : 'DESC';
+    
+        if (in_array($sort, $allowedSorts, true)) {
+            $qb->orderBy('m.' . $sort, $direction);
+        } else {
+            $qb->orderBy('m.fechaMovimiento', 'DESC');
+        }
+    
         return $qb;
     }
 
