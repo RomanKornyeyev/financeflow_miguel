@@ -1,0 +1,9 @@
+{% macro summary(pager) %}
+  {% if pager.nbResults > 0 %}
+    <div class="text-muted small">
+      Página {{ pager.currentPage }} de {{ pager.nbPages }} —
+      Mostrando {{ pager.currentPageOffsetStart }} a {{ pager.currentPageOffsetEnd }}
+      de {{ pager.nbResults }} resultados
+    </div>
+  {% endif %}
+{% endmacro %}

@@ -1,5 +1,8 @@
 {% extends 'base.html.twig' %}
 
+{% import 'partials/macros/_sort_links.html.twig' as sort %}
+{% import 'partials/macros/_pagination_helper.html.twig' as paginador %}
+
 {% block title %}Mis Movimientos{% endblock %}
 
 {% block content %}
@@ -18,7 +21,7 @@
             <div class="col-md-2">{{ form_row(form.concepto) }}</div>
             <div class="col-md-2">{{ form_row(form.descripcion) }}</div>
         </div>
-        
+
         <div class="mt-2 d-flex justify-content-between">
             <button type="submit" class="btn btn-primary">Filtrar</button>
             <a href="{{ path('movimiento_index') }}" class="btn btn-outline-primary">Resetear Filtros</a>
@@ -29,28 +32,18 @@
         <div class="alert alert-info">No tienes movimientos registrados aún.</div>
     {% else %}
         <table class="table table-striped">
+
+            {% set currentSort = app.request.get('sort') ?? '' %}
+            {% set currentDir = app.request.get('dir') ?? 'desc' %}
+            {% set currentQuery = app.request.query.all %}
+
             <thead>
                 <tr>
-                    {% set currentSort = app.request.get('sort') ?? '' %}
-                    {% set currentDir = app.request.get('dir') ?? 'desc' %}
-
-                    {% macro sort_link(label, field, currentSort, currentDir) %}
-                        {% set newDir = (currentSort == field and currentDir == 'asc') ? 'desc' : 'asc' %}
-                        <a href="{{ path('movimiento_index', app.request.query.all | merge({'sort': field, 'dir': newDir})) }}">
-                            {{ label }}
-                            {% if currentSort == field %}
-                                <i class="fa-solid fa-arrow-{{ currentDir == 'asc' ? 'up' : 'down' }}"></i>
-                            {% endif %}
-                        </a>
-                    {% endmacro %}
-
-                    {% import _self as self %}
-
-                    <th>{{ self.sort_link('Fecha', 'fechaMovimiento', currentSort, currentDir) }}</th>
-                    <th>{{ self.sort_link('Tipo', 'tipoTransaccion', currentSort, currentDir) }}</th>
-                    <th>{{ self.sort_link('Categoría', 'categoria', currentSort, currentDir) }}</th>
-                    <th>{{ self.sort_link('Concepto', 'concepto', currentSort, currentDir) }}</th>
-                    <th>{{ self.sort_link('Importe', 'importe', currentSort, currentDir) }}</th>
+                    <th>{{ sort.link('Fecha', 'fechaMovimiento', currentSort, currentDir, 'movimiento_index', currentQuery) }}</th>
+                    <th>{{ sort.link('Tipo', 'tipoTransaccion', currentSort, currentDir, 'movimiento_index', currentQuery) }}</th>
+                    <th>{{ sort.link('Categoría', 'categoria', currentSort, currentDir, 'movimiento_index', currentQuery) }}</th>
+                    <th>{{ sort.link('Concepto', 'concepto', currentSort, currentDir, 'movimiento_index', currentQuery) }}</th>
+                    <th>{{ sort.link('Importe', 'importe', currentSort, currentDir, 'movimiento_index', currentQuery) }}</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -81,13 +74,15 @@
         </table>
 
         {# 📜 Sección de paginación #}
-        <div class="navigation d-flex justify-content-center mt-4">
+        <div class="navigation d-flex justify-content-center align-items-center mt-4 flex-column">
             {{ pagerfanta(pager, {
                 proximity: 1,
                 prev_message: 'Anterior',
                 next_message: 'Siguiente',
             }) }}
+            {{ paginador.summary(pager) }}
         </div>
+        
     {% endif %}
 </div>
 {% endblock %}
