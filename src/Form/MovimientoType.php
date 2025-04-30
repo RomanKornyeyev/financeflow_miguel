@@ -41,6 +41,7 @@ class MovimientoType extends AbstractType
             ->add('descripcion', TextareaType::class, [
                 'required' => false,
                 'label' => 'Descripción',
+                'attr' => ['rows' => 4],
             ])
             ->add('fechaMovimiento', DateType::class, [
                 'widget' => 'single_text',
