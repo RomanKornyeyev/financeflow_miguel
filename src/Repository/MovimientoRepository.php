@@ -79,9 +79,19 @@ class MovimientoRepository extends ServiceEntityRepository
             $qb->andWhere('m.categoria = :categoria')
                ->setParameter('categoria', $filters['categoria']);
         }
+
+        if (!empty($filters['importeMin'])) {
+            $qb->andWhere('m.importe >= :importeMin')
+               ->setParameter('importeMin', $filters['importeMin']);
+        }
+        
+        if (!empty($filters['importeMax'])) {
+            $qb->andWhere('m.importe <= :importeMax')
+               ->setParameter('importeMax', $filters['importeMax']);
+        }
     
         // 🧠 Ordenamiento dinámico
-        $allowedSorts = ['fechaMovimiento', 'importe', 'concepto'];
+        $allowedSorts = ['fechaMovimiento', 'importe', 'concepto', 'categoria', 'tipoTransaccion'];
         $direction = strtolower($dir) === 'asc' ? 'ASC' : 'DESC';
     
         if (in_array($sort, $allowedSorts, true)) {

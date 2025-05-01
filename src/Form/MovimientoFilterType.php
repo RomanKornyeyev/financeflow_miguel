@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -51,6 +52,16 @@ class MovimientoFilterType extends AbstractType
           'required' => false,
           'placeholder' => 'Todas',
           'label' => 'Categoría',
+        ])
+        ->add('importeMin', MoneyType::class, [
+          'currency' => 'EUR',
+          'required' => false,
+          'label' => 'Importe desde',
+        ])
+        ->add('importeMax', MoneyType::class, [
+            'currency' => 'EUR',
+            'required' => false,
+            'label' => 'Importe hasta',
         ]);
     }
 

@@ -34,7 +34,7 @@ class MovimientoController extends AbstractController
         $adapter = new QueryAdapter($queryBuilder);
         $pager = new Pagerfanta($adapter);
     
-        $pager->setMaxPerPage(2);
+        $pager->setMaxPerPage(4);
         $page = $request->query->getInt('page', 1);
     
         try {

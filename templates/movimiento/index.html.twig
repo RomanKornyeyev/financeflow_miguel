@@ -4,21 +4,22 @@
 {% import 'partials/macros/_sort_links.html.twig' as sort %}
 {% import 'partials/macros/_pagination_helper.html.twig' as paginador %}
 {% import 'partials/macros/_empty_message.html.twig' as empty %}
+{% import 'partials/macros/_filter_summary.html.twig' as resumen %}
 
 {% block title %}Mis Movimientos{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
+
     <h1 class="text-center mb-3">Mis Movimientos</h1>
 
-    <p class="d-inline-flex gap-1">
-        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
-            <i class="fa-solid fa-magnifying-glass"></i> Filtros
-        </button>
-    </p>
+    {# captura de los filtros aplicados por GET #}
+    {% set filtros = app.request.query.all['movimiento_filter'] ?? {} %}
+
+    {# h6 con los filtros aplicados #}
+    {{ resumen.show(filtros) }}
 
     {# comprobamos si hay GET, para desplegar los filtros #}
-    {% set filtros = app.request.query.all['movimiento_filter'] ?? {} %}
     {% set tieneFiltros = 
         filtros['desde']|default('') is not empty or
         filtros['hasta']|default('') is not empty or
@@ -28,17 +29,27 @@
         filtros['descripcion']|default('') is not empty
     %}
 
+    <p class="d-inline-flex gap-1">
+        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
+            <i class="fa-solid fa-magnifying-glass"></i> Filtros
+        </button>
+    </p>
+
     <div class="collapse {{ tieneFiltros ? 'show' : '' }}" id="collapseFilters">
         {{ form_start(form, { 'attr': { 'class': 'p-4 p-md-5 border rounded-3 bg-body-tertiary mb-3' } }) }}
             <div class="row">
-                <div class="col-md-3">{{ form_row(form.desde) }}</div>
-                <div class="col-md-3">{{ form_row(form.hasta) }}</div>
+                <div class="col-md-3">{{ form_row(form.importeMin) }}</div>
+                <div class="col-md-3">{{ form_row(form.importeMax) }}</div>
                 <div class="col-md-3">{{ form_row(form.tipoTransaccion) }}</div>
                 <div class="col-md-3">{{ form_row(form.categoria) }}</div>
             </div>
             <div class="row">
-                <div class="col-md-4">{{ form_row(form.concepto) }}</div>
-                <div class="col-md-8">{{ form_row(form.descripcion) }}</div>
+                <div class="col-md-3">{{ form_row(form.desde) }}</div>
+                <div class="col-md-3">{{ form_row(form.hasta) }}</div>
+                <div class="col-md-6">{{ form_row(form.concepto) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">{{ form_row(form.descripcion) }}</div>
             </div>
 
             <div class="mt-2 d-flex justify-content-center align-items-center gap-3">
@@ -50,7 +61,7 @@
     
 
     <div class="d-flex justify-content-between align-items-center flex-wrap">
-        <a href="{{ path('movimiento_editar') }}" class="btn btn-success mb-3">+ Nuevo Movimiento</a>
+        <a href="{{ path('movimiento_editar') }}" class="btn btn-primary mb-3"><i class="fa-solid fa-plus"></i> Nuevo Movimiento</a>
 
         {{ pagerfanta(pager, {
             proximity: 1,
