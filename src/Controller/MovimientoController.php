@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+
 #[Route('/movimientos')]
 class MovimientoController extends AbstractController
 {
@@ -24,6 +25,9 @@ class MovimientoController extends AbstractController
         $form->handleRequest($request);
 
         $filtros = $form->getData() ?? [];
+
+        $totales = $entityManager->getRepository(Movimiento::class)
+            ->getTotalesFiltrados($this->getUser(), $filtros);
 
         $sort = $request->query->get('sort');
         $dir = $request->query->get('dir');
@@ -46,6 +50,7 @@ class MovimientoController extends AbstractController
         return $this->render('movimiento/index.html.twig', [
             'pager' => $pager,
             'form' => $form->createView(),
+            'totales' => $totales,
         ]);
     }    
 

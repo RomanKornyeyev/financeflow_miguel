@@ -19,6 +19,39 @@
     {# h6 con los filtros aplicados #}
     {{ resumen.show(filtros) }}
 
+    {% if totales %}
+        <div class="row row-cols-1 row-cols-md-3">
+            <div class="col mb-3">
+                <div class="card">
+                    <div class="card-body text-center bg-body-tertiary">
+                        <strong>Total ingresos:</strong><br>
+                        <span class="h4">{{ totales.ingresos|number_format(2, ',', '.') }}€</span>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-3">
+                <div class="card">
+                    <div class="card-body text-center bg-body-tertiary">
+                        <strong>Total gastos:</strong><br>
+                        <span class="h4">{{ totales.gastos|number_format(2, ',', '.') }}€</span>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-3">
+                <div class="card">
+                    <div class="card-body text-center bg-body-tertiary">
+                        <strong>Balance:</strong><br>
+                        <span class="h4 {{ totales.balance >= 0 ? 'text-success' : 'text-danger' }}">
+                            {{ totales.balance|number_format(2, ',', '.') }} €
+                        </div>
+                    </div>
+                </span>
+            </div>
+        </div>
+    {% endif %}
+
     {# comprobamos si hay GET, para desplegar los filtros #}
     {% set tieneFiltros = 
         filtros['desde']|default('') is not empty or
