@@ -78,11 +78,29 @@
         filtros['descripcion']|default('') is not empty
     %}
 
-    <p class="d-inline-flex gap-1">
-        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
-            <i class="fa-solid fa-magnifying-glass"></i> Filtros
-        </button>
-    </p>
+    <div class="d-flex gap-1 justify-content-between align-items-center mb-3">
+        <div>
+            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
+                <i class="fa-solid fa-magnifying-glass"></i> Filtros
+            </button>
+        </div>
+
+        <div>
+            {% set currentSort = app.request.get('sort') ?? '' %}
+            {% set currentDir = app.request.get('dir') ?? 'desc' %}
+            {% set currentQuery = app.request.query.all %}
+
+            <div class="d-inline-block text-muted small me-2">
+                Ordenar por:
+            </div>
+
+            {{ sort.link('Fecha', 'fechaMovimiento', currentSort, currentDir, 'movimiento_index', currentQuery) }}
+            {{ sort.link('Tipo', 'tipoTransaccion', currentSort, currentDir, 'movimiento_index', currentQuery) }}
+            {{ sort.link('Categoría', 'categoria', currentSort, currentDir, 'movimiento_index', currentQuery) }}
+            {{ sort.link('Concepto', 'concepto', currentSort, currentDir, 'movimiento_index', currentQuery) }}
+            {{ sort.link('Importe', 'importe', currentSort, currentDir, 'movimiento_index', currentQuery) }}
+        </div>
+    </div>
 
     <div class="collapse {{ tieneFiltros ? 'show' : '' }}" id="collapseFilters">
         {{ form_start(form, { 'attr': { 'class': 'p-4 p-md-5 border rounded-3 bg-body-tertiary mb-3' } }) }}
@@ -122,49 +140,47 @@
     {% if pager.nbResults == 0 %}
         {{ empty.show('No se encontraron resultados.', 'info') }}
     {% else %}
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
+        <div class="d-flex flex-column gap-3 mb-4">
+            {% for movimiento in pager.currentPageResults %}
+                <div class="card shadow-sm w-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap">
+                            <h5 class="card-title mb-0">
+                                {{ (movimiento.concepto|length > 35 ? movimiento.concepto[:35] ~ '...' : movimiento.concepto)|capitalize }}
+                            </h5>
+                            <span class="fs-4 fw-bold {{ movimiento.tipoTransaccion.value == 'gasto' ? 'text-danger' : 'text-success' }}">
+                                {{ movimiento.tipoTransaccion.value == 'gasto' ? '-' : '+' }}{{ movimiento.importe }} €
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div>
+                                <div class="mb-1 text-muted small">
+                                    {{ movimiento.fechaMovimiento|date('d/m/Y') }} | {{ movimiento.tipoTransaccion.value|capitalize }} | {{ movimiento.categoria.value|replace({'_':' '})|capitalize }}
+                                </div>
+                                <p class="mb-2 text-body-secondary small">
+                                    {{ (movimiento.descripcion|length > 35 ? movimiento.descripcion[:35] ~ '...' : movimiento.descripcion)|default('Sin descripción') }}
+                                </p>
+                            </div>
 
-                {% set currentSort = app.request.get('sort') ?? '' %}
-                {% set currentDir = app.request.get('dir') ?? 'desc' %}
-                {% set currentQuery = app.request.query.all %}
-
-                <thead>
-                    <tr>
-                        <th class="bg-dark-subtle">{{ sort.link('Fecha', 'fechaMovimiento', currentSort, currentDir, 'movimiento_index', currentQuery) }}</th>
-                        <th class="bg-dark-subtle">{{ sort.link('Tipo', 'tipoTransaccion', currentSort, currentDir, 'movimiento_index', currentQuery) }}</th>
-                        <th class="bg-dark-subtle">{{ sort.link('Categoría', 'categoria', currentSort, currentDir, 'movimiento_index', currentQuery) }}</th>
-                        <th class="bg-dark-subtle">{{ sort.link('Concepto', 'concepto', currentSort, currentDir, 'movimiento_index', currentQuery) }}</th>
-                        <th class="bg-dark-subtle">{{ sort.link('Importe', 'importe', currentSort, currentDir, 'movimiento_index', currentQuery) }}</th>
-                        <th class="bg-dark-subtle">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for movimiento in pager.currentPageResults %}
-                        <tr>
-                            <td>{{ movimiento.fechaMovimiento|date('d/m/Y') }}</td>
-                            <td>{{ movimiento.tipoTransaccion.value|capitalize }}</td>
-                            <td>{{ movimiento.categoria.value|replace({'_': ' '})|capitalize }}</td>
-                            <td>{{ movimiento.concepto }}</td>
-                            <td>
-                                {% if movimiento.tipoTransaccion.value == 'gasto' %}
-                                    -{{ movimiento.importe }} €
-                                {% else %}
-                                    +{{ movimiento.importe }} €
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{{ path('movimiento_editar', {id: movimiento.id}) }}" class="btn btn-sm btn-primary">Editar</a>
-                                <form method="post" action="{{ path('movimiento_eliminar', {id: movimiento.id}) }}" style="display:inline-block;" onsubmit="return confirm('¿Seguro que quieres eliminar este movimiento?');">
+                            <div class="mb-2 d-flex justify-content-end gap-2 align-self-end">
+                                <div>
+                                    <a href="{{ path('movimiento_editar', {id: movimiento.id}) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa-solid fa-pen"></i> Editar
+                                    </a>
+                                </div>
+                                <form method="post" action="{{ path('movimiento_eliminar', {id: movimiento.id}) }}" onsubmit="return confirm('¿Seguro que quieres eliminar este movimiento?');">
                                     <input type="hidden" name="_token" value="{{ csrf_token('csrf_eliminar_movimiento' ~ movimiento.id) }}">
-                                    <button class="btn btn-sm btn-danger">Eliminar</button>
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="fa-solid fa-trash"></i> Eliminar
+                                    </button>
                                 </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
+
 
         {# 📜 Sección de paginación #}
         <div class="navigation d-flex justify-content-center align-items-center mt-1 flex-column">

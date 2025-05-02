@@ -7,7 +7,7 @@
         : '<i class="fa-solid fa-arrow-down"></i>' %}
     {% endif %}
 
-    <a href="{{ path(route, queryParams | merge({'sort': field, 'dir': newDir}))|e('html_attr') }}">
+    <a href="{{ path(route, queryParams | merge({'sort': field, 'dir': newDir}))|e('html_attr') }}" class="btn btn-outline-primary">
         {{ label | raw }} {{ icon | raw }}
     </a>
 {% endmacro %}
