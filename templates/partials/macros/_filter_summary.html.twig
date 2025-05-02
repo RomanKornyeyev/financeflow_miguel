@@ -34,8 +34,12 @@
   {% endif %}
 
   {% if partes|length > 0 %}
-    <h6 class="text-center text-muted mt-2 mb-4">
+    <h5 class="text-center text-muted mt-2 mb-4">
       {{ partes|join(', ')|raw }}
-    </h6>
+    </h5>
+  {% else %}
+    <h5 class="text-center text-muted mt-2 mb-4">
+      posición global
+    </h5>
   {% endif %}
 {% endmacro %}

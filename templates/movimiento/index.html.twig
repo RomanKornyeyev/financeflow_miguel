@@ -5,6 +5,7 @@
 {% import 'partials/macros/_pagination_helper.html.twig' as paginador %}
 {% import 'partials/macros/_empty_message.html.twig' as empty %}
 {% import 'partials/macros/_filter_summary.html.twig' as resumen %}
+{% import 'partials/macros/_grafico.html.twig' as grafico %}
 
 {# DATA FOR CHART #}
 {% set ingresosLabels = ingresosPorCategoria | map(c => c.categoria.value|replace({'_': ' '})|capitalize) %}
@@ -27,113 +28,14 @@
     {# h6 con los filtros aplicados #}
     {{ resumen.show(filtros) }}
 
-    <script>
-        const ingresosData = {
-            labels: {{ ingresosLabels|json_encode|raw }},
-            values: {{ ingresosValores|json_encode|raw }}
-        };
-
-        const gastosData = {
-            labels: {{ gastosLabels|json_encode|raw }},
-            values: {{ gastosValores|json_encode|raw }}
-        };
-    </script>
-    <div class="row row-cols-1 row-cols-md-2 mb-4">
+    <div class="row row-cols-1 row-cols-md-2">
         <div class="col mb-3">
-            <div class="card h-100">
-                <div class="card-header text-center fw-bold">Ingresos por categoría</div>
-                <div class="card-body">
-                    <canvas id="graficoIngresos"></canvas>
-                    <ul class="list-group list-group-flush small mt-2">
-                        {% for i in 0..(ingresosLabels|length - 1) %}
-                            {% set label = ingresosLabels[i] %}
-                            {% set value = ingresosValores[i] %}
-                            {% set porcentaje = totalIngresos > 0 ? (value / totalIngresos * 100) : 0 %}
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span>{{ label }}</span>
-                                <span>{{ value|number_format(2, ',', '.') }} € ({{ porcentaje|number_format(1, ',', '') }}%)</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
+            {{ grafico.pieChart('graficoIngresos', 'Ingresos por categoría', ingresosLabels, ingresosValores) }}
         </div>
         <div class="col mb-3">
-            <div class="card h-100">
-                <div class="card-header text-center fw-bold">Ingresos por categoría</div>
-                <div class="card-body">
-                    <canvas id="graficoGastos"></canvas>
-                    <ul class="list-group list-group-flush small mt-2">
-                        {% for i in 0..(gastosLabels|length - 1) %}
-                            {% set label = gastosLabels[i] %}
-                            {% set value = gastosValores[i] %}
-                            {% set porcentaje = totalGastos > 0 ? (value / totalGastos * 100) : 0 %}
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span>{{ label }}</span>
-                                <span>{{ value|number_format(2, ',', '.') }} € ({{ porcentaje|number_format(1, ',', '') }}%)</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
+            {{ grafico.pieChart('graficoGastos', 'Gastos por categoría', gastosLabels, gastosValores) }}
         </div>
-    </div>
-    
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const colores = [
-            '#4caf50', '#2196f3', '#ff9800', '#e91e63',
-            '#9c27b0', '#00bcd4', '#f44336', '#8bc34a',
-        ];
-
-        const crearGrafico = (ctxId, data, titulo) => {
-            new Chart(document.getElementById(ctxId), {
-                type: 'pie',
-                data: {
-                    labels: data.labels,
-                    datasets: [{
-                        data: data.values,
-                        backgroundColor: colores,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: titulo,
-                            padding: 10,
-                            font: {
-                                size: 18
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = parseFloat(context.raw) || 0;
-                                    const data = context.chart.data.datasets[0].data.map(v => parseFloat(v) || 0);
-                                    const total = data.reduce((a, b) => a + b, 0);
-
-                                    const porcentaje = total > 0
-                                        ? ((value / total) * 100).toFixed(1)
-                                        : '0.0';
-
-                                    return `${label}: ${value.toLocaleString('es-ES', {minimumFractionDigits: 2})} € (${porcentaje}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        };
-
-        crearGrafico('graficoIngresos', ingresosData, 'INGRESOS');
-        crearGrafico('graficoGastos', gastosData, 'GASTOS');
-    </script>
-
-
+    </div>    
 
     {% if totales %}
         <div class="row row-cols-1 row-cols-md-3">
@@ -142,7 +44,6 @@
                     <div class="card-body text-center bg-body-tertiary">
                         <strong>Total ingresos:</strong><br>
                         <span class="h4">{{ totales.ingresos|number_format(2, ',', '.') }}€</span>
-                        
                     </div>
                 </div>
             </div>
@@ -151,7 +52,6 @@
                     <div class="card-body text-center bg-body-tertiary">
                         <strong>Total gastos:</strong><br>
                         <span class="h4">{{ totales.gastos|number_format(2, ',', '.') }}€</span>
-                        
                     </div>
                 </div>
             </div>
