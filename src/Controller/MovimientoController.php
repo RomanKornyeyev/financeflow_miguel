@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Enum\MovimientoTipo;
 
 
 #[Route('/movimientos')]
@@ -26,19 +27,38 @@ class MovimientoController extends AbstractController
 
         $filtros = $form->getData() ?? [];
 
+        $repo = $entityManager->getRepository(Movimiento::class);
+
+        // totales por categoría (ingresos) para chart
+        $totalesIngresosPorCategoria = $repo->getTotalesPorCategoria(
+            $this->getUser(),
+            $filtros,
+            MovimientoTipo::INGRESO
+        );
+
+        // totales por categoría (gastos) para chart
+        $totalesGastosPorCategoria = $repo->getTotalesPorCategoria(
+            $this->getUser(),
+            $filtros,
+            MovimientoTipo::GASTO
+        );
+
+        // totales (ingresos, gastos, balance) para tarjetas
         $totales = $entityManager->getRepository(Movimiento::class)
             ->getTotalesFiltrados($this->getUser(), $filtros);
 
+        // ordenación tabla/lista
         $sort = $request->query->get('sort');
         $dir = $request->query->get('dir');
 
+        // Crear el QueryBuilder filtrado
         $queryBuilder = $entityManager->getRepository(Movimiento::class)
             ->createFilteredQueryBuilder($this->getUser(), $filtros, $sort, $dir);
     
         $adapter = new QueryAdapter($queryBuilder);
         $pager = new Pagerfanta($adapter);
     
-        $pager->setMaxPerPage(4);
+        $pager->setMaxPerPage(10);
         $page = $request->query->getInt('page', 1);
     
         try {
@@ -51,6 +71,8 @@ class MovimientoController extends AbstractController
             'pager' => $pager,
             'form' => $form->createView(),
             'totales' => $totales,
+            'ingresosPorCategoria' => $totalesIngresosPorCategoria,
+            'gastosPorCategoria' => $totalesGastosPorCategoria,
         ]);
     }    
 

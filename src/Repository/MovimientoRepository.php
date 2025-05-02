@@ -168,5 +168,57 @@ class MovimientoRepository extends ServiceEntityRepository
         ];
     }
 
+    // TOTAL POR CATEGORIA
+    public function getTotalesPorCategoria(Usuario $usuario, array $filters, MovimientoTipo $tipo): array
+    {
+        $qb = $this->createQueryBuilder('m')
+            ->select('m.categoria, SUM(m.importe) as total')
+            ->where('m.usuario = :usuario')
+            ->andWhere('m.tipoTransaccion = :tipo')
+            ->setParameter('usuario', $usuario)
+            ->setParameter('tipo', $tipo)
+            ->groupBy('m.categoria')
+            ->orderBy('total', 'DESC');
+
+        // Reaplicamos los filtros igual que en el listado
+        if (!empty($filters['desde'])) {
+            $qb->andWhere('m.fechaMovimiento >= :desde')
+            ->setParameter('desde', $filters['desde']);
+        }
+
+        if (!empty($filters['hasta'])) {
+            $qb->andWhere('m.fechaMovimiento <= :hasta')
+            ->setParameter('hasta', $filters['hasta']);
+        }
+
+        if (!empty($filters['concepto'])) {
+            $qb->andWhere('LOWER(m.concepto) LIKE :concepto')
+            ->setParameter('concepto', '%' . strtolower($filters['concepto']) . '%');
+        }
+
+        if (!empty($filters['descripcion'])) {
+            $qb->andWhere('LOWER(m.descripcion) LIKE :descripcion')
+            ->setParameter('descripcion', '%' . strtolower($filters['descripcion']) . '%');
+        }
+
+        if (!empty($filters['categoria'])) {
+            $qb->andWhere('m.categoria = :categoria')
+            ->setParameter('categoria', $filters['categoria']);
+        }
+
+        if (!empty($filters['importeMin'])) {
+            $qb->andWhere('m.importe >= :importeMin')
+            ->setParameter('importeMin', $filters['importeMin']);
+        }
+
+        if (!empty($filters['importeMax'])) {
+            $qb->andWhere('m.importe <= :importeMax')
+            ->setParameter('importeMax', $filters['importeMax']);
+        }
+
+        return $qb->getQuery()->getResult(); // Array de arrays (no objetos)
+    }
+
+
 
 }
