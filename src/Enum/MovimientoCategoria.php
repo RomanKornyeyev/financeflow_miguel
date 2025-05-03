@@ -4,21 +4,26 @@ namespace App\Enum;
 
 enum MovimientoCategoria: string
 {
-    // Ingresos
-    case SUELDO = 'sueldo';
-    case VENTAS = 'ventas';
-    case REGALO = 'regalo';
-    case OTROS_INGRESOS = 'otros_ingresos';
-
     // Gastos
-    case COMIDA = 'comida';
-    case ALQUILER_HIPOTECA = 'alquiler_hipoteca';
-    case SERVICIOS = 'servicios'; // luz, agua, gas, internet
+    case COMIDA = 'comida / supermercado';
+    case OCIO = 'ocio / restaurantes / cines'; // cine, bares, viajes
+    case ALQUILER_HIPOTECA = 'alquiler / hipoteca';
+    case SERVICIOS = 'luz / agua / gas / internet'; // luz, agua, gas, internet
+    case ELECTRONICA = 'electrónica / pc / móvil'; // electrónica, pc, móvil
     case TRANSPORTE = 'transporte'; // coche, metro, bus
     case SALUD = 'salud'; // médicos, farmacia
-    case OCIO = 'ocio'; // cine, bares, viajes
-    case EDUCACION = 'educacion'; // cursos, libros
     case ROPA = 'ropa';
+    case SUSCRIPCIONES = 'suscripciones'; // Netflix, Spotify, Amazon Prime
+    case EDUCACION = 'educacion'; // cursos, libros
     case GASTO_IMPREVISTO = 'gasto_imprevisto';
     case AHORRO = 'ahorro';
+    case INVERSION = 'inversion'; // inversiones, acciones, criptomonedas
+    case OTROS_GASTOS = 'otros gastos'; // otros gastos no clasificados
+
+    // Ingresos
+    case SUELDO = 'sueldo / nómina'; // sueldo, nómina
+    case VENTAS = 'ventas';
+    case REGALO = 'regalo';
+    case HERENCIA = 'herencia';
+    case OTROS_INGRESOS = 'otros ingresos';
 }
