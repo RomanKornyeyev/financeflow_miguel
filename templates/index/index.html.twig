@@ -1,9 +1,78 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}IndexController{% endblock %}
+{% block title %}Controla tus Gastos con FinanzasApp{% endblock %}
 
 {% block content %}
-<div class="example-wrapper">
-    <h1>IndexController ✅</h1>
+<div class="landing-page">
+
+    {# SECCIÓN 1: HERO #}
+    <section class="d-flex justify-content-center align-items-center text-white text-center py-5" style="min-height:50vh; min-height: 500px;">
+        <div class="container">
+            <h1 class="display-3 fw-bold mb-3">Controla tus gastos</h1>
+            <p class="lead mb-4">Toma el control de tu economía personal de forma simple y visual.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ path('app_login') }}" class="btn btn-light btn-lg">Iniciar sesión</a>
+                <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-lg">Registrarse</a>
+            </div>
+        </div>
+    </section>
+
+    {# SECCIÓN 2: FUNCIONALIDADES #}
+    <section class="py-5 bg-body text-body border-bottom">
+        <div class="container">
+            <h2 class="text-center mb-5">¿Qué puedes hacer con FinanzasApp?</h2>
+            <div class="row text-center">
+                <div class="col-md-4 mb-4">
+                    <i class="fa-solid fa-wallet fa-3x text-primary mb-3"></i>
+                    <h5>Registra tus movimientos</h5>
+                    <p>Anota ingresos y gastos fácilmente desde cualquier dispositivo.</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <i class="fa-solid fa-chart-pie fa-3x text-success mb-3"></i>
+                    <h5>Visualiza con gráficos</h5>
+                    <p>Ve tus gastos e ingresos por categoría con gráficos circulares claros y dinámicos.</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <i class="fa-solid fa-calendar-days fa-3x text-warning mb-3"></i>
+                    <h5>Filtra por fechas</h5>
+                    <p>Consulta tus finanzas mensuales, trimestrales o del periodo que tú elijas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# SECCIÓN 3: LLAMADO A LA ACCIÓN #}
+    <section class="py-5 bg-body text-body border-bottom">
+        <div class="container text-center">
+            <h2 class="fw-bold mb-3">¿Listo para mejorar tus finanzas?</h2>
+            <p class="mb-4">Regístrate gratis y empieza hoy mismo a tomar el control.</p>
+            <a href="{{ path('app_register') }}" class="btn btn-primary btn-lg">Crear cuenta</a>
+        </div>
+    </section>
+
+    {# SECCIÓN 4: CONFIANZA/TECNOLOGÍA #}
+    <section class="py-5 bg-body text-body">
+        <div class="container">
+            <h3 class="text-center mb-4">Tecnología y confianza</h3>
+            <div class="row justify-content-center text-center">
+                <div class="col-md-3 mb-3">
+                    <i class="fa-solid fa-lock fa-2x text-danger mb-2"></i>
+                    <p class="fw-semibold mb-1">Autenticación segura</p>
+                    <p class="small">Tokens únicos, protección CSRF y cifrado de contraseñas para tu tranquilidad.</p>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <i class="fa-solid fa-cloud fa-2x text-info mb-2"></i>
+                    <p class="fw-semibold mb-1">Disponibilidad total</p>
+                    <p class="small">Accede desde cualquier lugar, sin perder tus datos ni configuración.</p>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <i class="fa-solid fa-mobile-screen fa-2x text-success mb-2"></i>
+                    <p class="fw-semibold mb-1">100% Responsive</p>
+                    <p class="small">Diseño adaptado para móvil, tablet y escritorio.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </div>
 {% endblock %}

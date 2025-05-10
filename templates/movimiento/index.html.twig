@@ -38,7 +38,7 @@
     </div>    
 
     {% if totales %}
-        <div class="row row-cols-1 row-cols-md-3">
+        <div id="totales" class="row row-cols-1 row-cols-md-3">
             <div class="col mb-3">
                 <div class="card">
                     <div class="card-body text-center bg-body-tertiary">
@@ -76,16 +76,12 @@
         filtros['categoria']|default('') is not empty or
         filtros['concepto']|default('') is not empty or
         filtros['descripcion']|default('') is not empty
-    %}
+    %}    
 
-    <div class="d-flex gap-1 justify-content-between align-items-center mb-3">
-        <div>
-            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
-                <i class="fa-solid fa-magnifying-glass"></i> Filtros
-            </button>
-        </div>
+    <div id="filtersBar" class="d-flex justify-content-between align-items-center flex-wrap">
+        <a href="{{ path('movimiento_editar') }}" class="btn btn-primary mb-3"><i class="fa-solid fa-plus"></i> Nuevo Movimiento</a>
 
-        <div>
+        <div class="mb-3">
             {% set currentSort = app.request.get('sort') ?? '' %}
             {% set currentDir = app.request.get('dir') ?? 'desc' %}
             {% set currentQuery = app.request.query.all %}
@@ -96,14 +92,18 @@
 
             {{ sort.link('Fecha', 'fechaMovimiento', currentSort, currentDir, 'movimiento_index', currentQuery) }}
             {{ sort.link('Tipo', 'tipoTransaccion', currentSort, currentDir, 'movimiento_index', currentQuery) }}
-            {{ sort.link('Categoría', 'categoria', currentSort, currentDir, 'movimiento_index', currentQuery) }}
-            {{ sort.link('Concepto', 'concepto', currentSort, currentDir, 'movimiento_index', currentQuery) }}
+            {# {{ sort.link('Categoría', 'categoria', currentSort, currentDir, 'movimiento_index', currentQuery) }} #}
+            {# {{ sort.link('Concepto', 'concepto', currentSort, currentDir, 'movimiento_index', currentQuery) }} #}
             {{ sort.link('Importe', 'importe', currentSort, currentDir, 'movimiento_index', currentQuery) }}
+            &nbsp;|&nbsp;
+            <button class="btn btn-outline-primary px-5 w-md-100" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
+                <i class="fa-solid fa-magnifying-glass"></i> Filtros
+            </button>
         </div>
     </div>
 
     <div class="collapse {{ tieneFiltros ? 'show' : '' }}" id="collapseFilters">
-        {{ form_start(form, { 'attr': { 'class': 'p-4 p-md-5 border rounded-3 bg-body-tertiary mb-3' } }) }}
+        {{ form_start(form, { 'attr': { 'class': 'p-4 p-md-5 border rounded-3 bg-body-tertiary mb-3', 'action': path('movimiento_index') ~ '#totales' } }) }}
             <div class="row">
                 <div class="col-md-3">{{ form_row(form.importeMin) }}</div>
                 <div class="col-md-3">{{ form_row(form.importeMax) }}</div>
@@ -124,17 +124,6 @@
                 <a href="{{ path('movimiento_index') }}" class="btn btn-outline-primary"><i class="fa-solid fa-eraser"></i> Resetear filtros</a>
             </div>
         {{ form_end(form) }}
-    </div>
-    
-
-    <div class="d-flex justify-content-between align-items-center flex-wrap">
-        <a href="{{ path('movimiento_editar') }}" class="btn btn-primary mb-3"><i class="fa-solid fa-plus"></i> Nuevo Movimiento</a>
-
-        {{ pagerfanta(pager, {
-            proximity: 1,
-            prev_message: 'Anterior',
-            next_message: 'Siguiente'
-        }) }}
     </div>
 
     {% if pager.nbResults == 0 %}
