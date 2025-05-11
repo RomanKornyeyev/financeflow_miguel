@@ -35,7 +35,7 @@
         <div class="col mb-3">
             {{ grafico.pieChart('graficoGastos', 'Gastos por categoría', gastosLabels, gastosValores) }}
         </div>
-    </div>    
+    </div>
 
     {% if totales %}
         <div id="totales" class="row row-cols-1 row-cols-md-3">
@@ -79,7 +79,7 @@
     %}    
 
     <div id="filtersBar" class="d-flex justify-content-between align-items-center flex-wrap">
-        <a href="{{ path('movimiento_editar') }}" class="btn btn-primary mb-3"><i class="fa-solid fa-plus"></i> Nuevo Movimiento</a>
+        <a href="{{ path('movimiento_editar') }}" class="btn btn-primary mb-3"><i class="fa-solid fa-plus"></i> Añadir Movimiento</a>
 
         <div class="mb-3">
             {% set currentSort = app.request.get('sort') ?? '' %}
@@ -152,21 +152,31 @@
                             </div>
 
                             <div class="mb-2 d-flex justify-content-end gap-2 align-self-end">
+                                <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#detalleMovimiento{{ movimiento.id }}">
+                                    <i class="fa-solid fa-eye"></i> Ver
+                                </button>
                                 <div>
                                     <a href="{{ path('movimiento_editar', {id: movimiento.id}) }}" class="btn btn-sm btn-outline-primary">
                                         <i class="fa-solid fa-pen"></i> Editar
                                     </a>
                                 </div>
-                                <form method="post" action="{{ path('movimiento_eliminar', {id: movimiento.id}) }}" onsubmit="return confirm('¿Seguro que quieres eliminar este movimiento?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('csrf_eliminar_movimiento' ~ movimiento.id) }}">
-                                    <button class="btn btn-sm btn-outline-danger">
-                                        <i class="fa-solid fa-trash"></i> Eliminar
-                                    </button>
-                                </form>
+                                <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalEliminarMovimiento{{ movimiento.id }}">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </button>
+                                {% include 'partials/modal/_modal_eliminar_movimiento.html.twig' with {
+                                    movimiento: movimiento,
+                                    id: 'modalEliminarMovimiento' ~ movimiento.id,
+                                    ariaLabelledBy: 'modalEliminarMovimientoLabel' ~ movimiento.id
+                                } %}
                             </div>
                         </div>
                     </div>
                 </div>
+                {% include 'partials/modal/_modal_detalle_movimiento.html.twig' with {
+                    movimiento: movimiento,
+                    id: 'detalleMovimiento' ~ movimiento.id,
+                    ariaLabelledBy: 'detalleMovimientoLabel' ~ movimiento.id
+                } %}
             {% endfor %}
         </div>
 

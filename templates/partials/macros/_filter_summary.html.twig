@@ -2,7 +2,7 @@
   {% set partes = [] %}
 
   {% if filtros['desde']|default('') is not empty %}
-    {% set partes = partes|merge(['Desde el ' ~ filtros['desde']|date('d/m/Y')]) %}
+    {% set partes = partes|merge(['desde el ' ~ filtros['desde']|date('d/m/Y')]) %}
   {% endif %}
 
   {% if filtros['hasta']|default('') is not empty %}
@@ -10,23 +10,23 @@
   {% endif %}
 
   {% if filtros['tipoTransaccion']|default('') is not empty %}
-    {% set partes = partes|merge(['Tipo: ' ~ filtros['tipoTransaccion']|capitalize]) %}
+    {% set partes = partes|merge(['tipo: ' ~ filtros['tipoTransaccion']|capitalize]) %}
   {% endif %}
 
   {% if filtros['categoria']|default('') is not empty %}
-    {% set partes = partes|merge(['Categoría: ' ~ filtros['categoria']|replace({'_': ' '})|capitalize]) %}
+    {% set partes = partes|merge(['categoría: ' ~ filtros['categoria']|replace({'_': ' '})|capitalize]) %}
   {% endif %}
 
   {% if filtros['concepto']|default('') is not empty %}
-    {% set partes = partes|merge(['Concepto que contiene: "' ~ filtros['concepto'] ~ '"']) %}
+    {% set partes = partes|merge(['concepto que contiene: "' ~ filtros['concepto'] ~ '"']) %}
   {% endif %}
 
   {% if filtros['descripcion']|default('') is not empty %}
-    {% set partes = partes|merge(['Descripción que contiene: "' ~ filtros['descripcion'] ~ '"']) %}
+    {% set partes = partes|merge(['descripción que contiene: "' ~ filtros['descripcion'] ~ '"']) %}
   {% endif %}
 
   {% if filtros['importeMin']|default('') is not empty %}
-    {% set partes = partes|merge(['Importe desde ' ~ filtros['importeMin'] ~ ' €']) %}
+    {% set partes = partes|merge(['importe desde ' ~ filtros['importeMin'] ~ ' €']) %}
   {% endif %}
 
   {% if filtros['importeMax']|default('') is not empty %}
@@ -35,11 +35,11 @@
 
   {% if partes|length > 0 %}
     <h5 class="text-center text-muted mt-2 mb-4">
-      {{ partes|join(', ')|raw }}
+      {{ partes|join(', ')|raw|capitalize }}
     </h5>
   {% else %}
     <h5 class="text-center text-muted mt-2 mb-4">
-      posición global
+      Posición global
     </h5>
   {% endif %}
 {% endmacro %}
