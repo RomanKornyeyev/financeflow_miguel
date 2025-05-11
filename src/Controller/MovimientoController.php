@@ -104,6 +104,14 @@ class MovimientoController extends AbstractController
             if (!$id) {
                 $movimiento->setUsuario($this->getUser());
             }
+
+            $importe = abs($movimiento->getImporte());
+
+            if ($movimiento->getTipoTransaccion() === MovimientoTipo::GASTO) {
+                $movimiento->setImporte(-$importe);
+            } else {
+                $movimiento->setImporte($importe);
+            }
     
             $entityManager->persist($movimiento);
             $entityManager->flush();

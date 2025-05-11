@@ -11,7 +11,7 @@
 					del día
 					<strong>{{ movimiento.fechaMovimiento|date('d/m/Y') }}</strong>?</p>
 				<p class="{{ movimiento.tipoTransaccion.value == 'gasto' ? 'text-danger' : 'text-success' }} fw-bold fs-5">
-					{{ movimiento.tipoTransaccion.value == 'gasto' ? '-' : '+' }}{{ movimiento.importe }}
+					{{ movimiento.tipoTransaccion.value == 'gasto' ? '' : '+' }}{{ movimiento.importe }}
 					€
 				</p>
 			</div>

@@ -164,7 +164,7 @@ class MovimientoRepository extends ServiceEntityRepository
         return [
             'ingresos' => (float) $result['totalIngresos'],
             'gastos' => (float) $result['totalGastos'],
-            'balance' => (float) $result['totalIngresos'] - (float) $result['totalGastos'],
+            'balance' => (float) $result['totalIngresos'] + (float) $result['totalGastos'],
         ];
     }
 

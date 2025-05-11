@@ -51,7 +51,7 @@
                 <div class="card">
                     <div class="card-body text-center bg-body-tertiary">
                         <strong>Total gastos:</strong><br>
-                        <span class="h4">{{ totales.gastos|number_format(2, ',', '.') }}€</span>
+                        <span class="h4">{{ totales.gastos|abs|number_format(2, ',', '.') }}€</span>
                     </div>
                 </div>
             </div>
@@ -138,7 +138,7 @@
                                 {{ (movimiento.concepto|length > 35 ? movimiento.concepto[:35] ~ '...' : movimiento.concepto)|capitalize }}
                             </h5>
                             <span class="fs-4 fw-bold {{ movimiento.tipoTransaccion.value == 'gasto' ? 'text-danger' : 'text-success' }}">
-                                {{ movimiento.tipoTransaccion.value == 'gasto' ? '-' : '+' }}{{ movimiento.importe }} €
+                                {{ movimiento.tipoTransaccion.value == 'gasto' ? '' : '+' }}{{ movimiento.importe }} €
                             </span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center flex-wrap">

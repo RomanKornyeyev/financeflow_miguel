@@ -7,7 +7,7 @@
 			</div>
 			<div class="modal-body">
 				<h4 class="fw-bold {{ movimiento.tipoTransaccion.value == 'gasto' ? 'text-danger' : 'text-success' }}">
-					{{ movimiento.tipoTransaccion.value == 'gasto' ? '-' : '+' }}{{ movimiento.importe }}
+					{{ movimiento.tipoTransaccion.value == 'gasto' ? '' : '+' }}{{ movimiento.importe }}
 					€
 				</h4>
 				<h5 class="mb-3">{{ movimiento.concepto }}</h5>
