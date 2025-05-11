@@ -34,7 +34,7 @@ class MailService
     $this->mailer->send($email);
   }
 
-  public function sendResetPasswordEmail(string $to, string $token): void
+  public function sendResetPasswordEmail(string $to, string $token, string $nombre = ''): void
   {
     $url = $this->router->generate('app_reset_password', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
 
@@ -44,7 +44,8 @@ class MailService
       ->subject('Recuperación de contraseña')
       ->htmlTemplate('email/reset_password.html.twig')
       ->context([
-        'resetPasswordUrl' => $url
+        'resetPasswordUrl' => $url,
+        'nombre' => $nombre
       ]);
 
     $this->mailer->send($email);
