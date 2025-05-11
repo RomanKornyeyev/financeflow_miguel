@@ -68,7 +68,11 @@ class MovimientoController extends AbstractController
         $pagination = $paginator->paginate(
             $queryBuilder,
             $page,
-            10
+            10,
+            [
+                'sortFieldParameterName' => null,
+                'sortDirectionParameterName' => null,
+            ]
         );
     
         return $this->render('movimiento/index.html.twig', [
