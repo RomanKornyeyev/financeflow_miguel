@@ -1,9 +1,10 @@
 {% macro summary(pager) %}
-  {% if pager.nbResults > 0 %}
+  {% set data = pager.getPaginationData() %}
+  {% if pager.getTotalItemCount() > 0 %}
     <div class="text-muted small">
-      Página {{ pager.currentPage }} de {{ pager.nbPages }} —
-      Mostrando {{ pager.currentPageOffsetStart }} a {{ pager.currentPageOffsetEnd }}
-      de {{ pager.nbResults }} resultados
+      Página {{ pager.getCurrentPageNumber() }} de {{ data.pageCount }} —
+      Mostrando {{ data.firstItemNumber }} a {{ data.lastItemNumber }}
+      de {{ pager.getTotalItemCount() }} resultados
     </div>
   {% endif %}
 {% endmacro %}

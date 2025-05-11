@@ -126,11 +126,11 @@
         {{ form_end(form) }}
     </div>
 
-    {% if pager.nbResults == 0 %}
+    {% if pagination.getTotalItemCount() == 0 %}
         {{ empty.show('No se encontraron resultados.', 'info') }}
     {% else %}
         <div class="d-flex flex-column gap-3 mb-4">
-            {% for movimiento in pager.currentPageResults %}
+            {% for movimiento in pagination %}
                 <div class="card shadow-sm w-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap">
@@ -172,13 +172,10 @@
 
 
         {# 📜 Sección de paginación #}
-        <div class="navigation d-flex justify-content-center align-items-center mt-1 flex-column">
-            {{ pagerfanta(pager, {
-                proximity: 1,
-                prev_message: 'Anterior',
-                next_message: 'Siguiente',
-            }) }}
-            {{ paginador.summary(pager) }}
+        <div id="pagination" class="navigation d-flex justify-content-center align-items-center mt-1 flex-column">
+            {# id #totales hardcodeado en el template sobreescrito #}
+            {{ knp_pagination_render(pagination, '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig', {}) }}
+            {{ paginador.summary(pagination) }}
         </div>
         
     {% endif %}

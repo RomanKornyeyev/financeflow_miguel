@@ -13,6 +13,8 @@ use App\Enum\MovimientoTipo;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
+use Knp\Component\Pager\PaginatorInterface;
+
 
 // HTTPFOUNDATION
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,7 +27,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class MovimientoController extends AbstractController
 {
     #[Route('/', name: 'movimiento_index')]
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, PaginatorInterface $paginator): Response
     {
         $form = $this->createForm(MovimientoFilterType::class);
         $form->handleRequest($request);
@@ -60,20 +62,17 @@ class MovimientoController extends AbstractController
         $queryBuilder = $entityManager->getRepository(Movimiento::class)
             ->createFilteredQueryBuilder($this->getUser(), $filtros, $sort, $dir);
     
-        $adapter = new QueryAdapter($queryBuilder);
-        $pager = new Pagerfanta($adapter);
-    
-        $pager->setMaxPerPage(10);
+        // Paginación
         $page = $request->query->getInt('page', 1);
-    
-        try {
-            $pager->setCurrentPage($page);
-        } catch (OutOfRangeCurrentPageException $e) {
-            return $this->redirectToRoute('movimiento_index', ['page' => 1]);
-        }
+
+        $pagination = $paginator->paginate(
+            $queryBuilder,
+            $page,
+            10
+        );
     
         return $this->render('movimiento/index.html.twig', [
-            'pager' => $pager,
+            'pagination' => $pagination,
             'form' => $form->createView(),
             'totales' => $totales,
             'ingresosPorCategoria' => $totalesIngresosPorCategoria,
