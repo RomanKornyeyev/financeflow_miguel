@@ -28,6 +28,18 @@
     {# h6 con los filtros aplicados #}
     {{ resumen.show(filtros) }}
 
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <div>
+            <a href="{{ path('movimiento_editar') }}" class="btn btn-primary mb-3 me-2"><i class="fa-solid fa-plus"></i> Añadir Movimiento</a>
+        </div>
+        <div>
+            <a href="{{ path('movimiento_export', app.request.query.all) }}" class="btn btn-outline-success mb-3">
+                <i class="fa-solid fa-download"></i>
+                Exportar a Excel
+            </a>
+        </div>
+    </div>
+
     <div class="row row-cols-1 row-cols-md-2">
         <div class="col mb-3">
             {{ grafico.pieChart('graficoIngresos', 'Ingresos por categoría', ingresosLabels, ingresosValores) }}
@@ -70,6 +82,8 @@
 
     {# comprobamos si hay GET, para desplegar los filtros #}
     {% set tieneFiltros = 
+        filtros['importeMin']|default('') is not empty or
+        filtros['importeMax']|default('') is not empty or
         filtros['desde']|default('') is not empty or
         filtros['hasta']|default('') is not empty or
         filtros['tipoTransaccion']|default('') is not empty or
@@ -79,7 +93,14 @@
     %}    
 
     <div id="filtersBar" class="d-flex justify-content-between align-items-center flex-wrap">
-        <a href="{{ path('movimiento_editar') }}" class="btn btn-primary mb-3"><i class="fa-solid fa-plus"></i> Añadir Movimiento</a>
+        <div>
+            <a href="{{ path('movimiento_editar') }}" class="btn btn-primary mb-3 me-2"><i class="fa-solid fa-plus"></i> Añadir Movimiento</a>
+            <a href="{{ path('movimiento_export', app.request.query.all) }}" class="btn btn-outline-success mb-3">
+                <i class="fa-solid fa-download"></i>
+                Exportar a Excel
+            </a>
+        </div>
+
 
         <div class="mb-3">
             {% set currentSort = app.request.get('sort') ?? '' %}

@@ -15,13 +15,14 @@ use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
 use Knp\Component\Pager\PaginatorInterface;
 
-
 // HTTPFOUNDATION
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+// SERVICES
+use App\Service\ExcelExportService;
 
 #[Route('/movimientos')]
 class MovimientoController extends AbstractController
@@ -149,5 +150,25 @@ class MovimientoController extends AbstractController
 
         return $this->redirectToRoute('movimiento_index');
     }
+
+    #[Route('/exportar', name: 'movimiento_export')]
+    public function export(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ExcelExportService $excelExportService
+    ): Response {
+        $form = $this->createForm(MovimientoFilterType::class);
+        $form->handleRequest($request);
+        $filtros = $form->getData() ?? [];
+
+        $movimientos = $entityManager->getRepository(Movimiento::class)
+            ->createFilteredQueryBuilder($this->getUser(), $filtros)
+            ->getQuery()
+            ->getResult();
+
+
+        return $excelExportService->exportMovimientos($movimientos, $filtros);
+    }
+
 
 }
