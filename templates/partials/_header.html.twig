@@ -39,22 +39,26 @@
                   Movimientos
                 </a>
               </li>
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2
+                          {% if 
+                            app.request.attributes.get('_route') == 'estadistica_index'
+                          %}
+                            active
+                          {% endif %} 
+                          " 
+                  href="{{ path('estadistica_index') }}"
+                >
+                  Estadísticas
+                </a>
+              </li>
             {% endif %}
             {# <li class="nav-item col-6 col-lg-auto">
               <a class="nav-link py-2 px-0 px-lg-2 active" aria-current="true" href="#">Docs</a>
             </li>
             <li class="nav-item col-6 col-lg-auto">
               <a class="nav-link py-2 px-0 px-lg-2" href="#">Examples</a>
-            </li>
-            <li class="nav-item col-6 col-lg-auto">
-              <a class="nav-link py-2 px-0 px-lg-2" href="#">Icons</a>
-            </li>
-            <li class="nav-item col-6 col-lg-auto">
-              <a class="nav-link py-2 px-0 px-lg-2" href="#">Themes</a>
-            </li>
-            <li class="nav-item col-6 col-lg-auto">
-              <a class="nav-link py-2 px-0 px-lg-2" href="#">Blog</a>
-            </li> #}
+            </li>#}
           </ul>
 
           <div class="nav-item py-2 py-lg-1 col-12 col-lg-auto">

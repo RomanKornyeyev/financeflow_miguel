@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% import 'partials/macros/_sort_links.html.twig' as sort %}
+{% import 'partials/macros/_pagination_helper.html.twig' as paginador %}
+{% import 'partials/macros/_empty_message.html.twig' as empty %}
+{% import 'partials/macros/_filter_summary.html.twig' as resumen %}
+{% import 'partials/macros/_grafico.html.twig' as grafico %}
+
+{# DATA FOR CHARTS #}
+
+
+{% block title %}Estadísticas
+{% endblock %}
+
+{% block content %}
+	<div class="container mt-4">
+		{# <ul>
+			{% for ingreso in ingresosJson %}
+					<li>{{ ingreso.concepto }} - {{ ingreso.importe }} ({{ ingreso.fechaMovimiento }})</li>
+			{% endfor %}
+		</ul>
+		<ul>
+			{% for gasto in gastosJson %}
+					<li class="text-danger">{{ gasto.concepto }} - {{ gasto.importe }} ({{ gasto.fechaMovimiento }})</li>
+			{% endfor %}
+		</ul> #}
+		<h1 class="text-center mb-3">Estadísticas</h1>
+<div class="row mb-4">
+  <div class="col-md-12">
+    <h5 class="text-center">Evolución Temporal</h5>
+    <div id="lineWrapper" style="position:relative; height:420px;">
+      <canvas id="lineChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const ingresos = {{ ingresosJson|json_encode|raw }};
+  const gastos   = {{ gastosJson|json_encode|raw }};
+
+  function agruparPorFecha(data, enAbsoluto = false) {
+    const agrupado = {};
+    data.forEach(item => {
+      const fecha = item.fechaMovimiento;
+      const valor = Number(item.importe) || 0;
+      if (!agrupado[fecha]) agrupado[fecha] = 0;
+      agrupado[fecha] += enAbsoluto ? Math.abs(valor) : valor;
+    });
+    return agrupado;
+  }
+
+  const ingresosPorFecha = agruparPorFecha(ingresos);
+  const gastosPorFecha   = agruparPorFecha(gastos, true);
+
+  const fechas = Array.from(new Set([
+    ...Object.keys(ingresosPorFecha),
+    ...Object.keys(gastosPorFecha)
+  ])).sort();
+
+  const ingresosData = fechas.map(f => ingresosPorFecha[f] ?? 0);
+  const gastosData   = fechas.map(f => gastosPorFecha[f] ?? 0);
+
+  const ctx = document.getElementById('lineChart').getContext('2d');
+
+  // --- Plugin de “reveal” con clip left->right (suave, sin saltos) ---
+  const revealPlugin = {
+    id: 'reveal',
+    afterInit(chart, args, options) {
+      const duration = options?.duration ?? 1800;
+      const start = performance.now();
+      function tick() {
+        const t = Math.min((performance.now() - start) / duration, 1);
+        chart.$revealT = t;
+        chart.draw(); // dibuja con el clip aplicado
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    },
+    beforeDatasetsDraw(chart, args, options) {
+      const t = chart.$revealT ?? 0;
+      const {ctx, chartArea} = chart;
+      if (!chartArea) return;
+      const {left, right, top, bottom} = chartArea;
+      ctx.save();
+      // Clip horizontal proporcional a t
+      ctx.beginPath();
+      ctx.rect(left, top, (right - left) * t, bottom - top);
+      ctx.clip();
+    },
+    afterDatasetsDraw(chart) {
+      chart.ctx.restore();
+    }
+  };
+
+  // Registra el plugin
+  Chart.register(revealPlugin);
+
+  if (window.__lineChart) window.__lineChart.destroy();
+
+  window.__lineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: fechas,
+      datasets: [
+        {
+          label: 'Ingresos',
+          data: ingresosData,
+          borderColor: '#28a745',
+          backgroundColor: 'rgba(40,167,69,0.2)',
+          fill: true,
+          tension: 0.25
+        },
+        {
+          label: 'Gastos',
+          data: gastosData,
+          borderColor: '#dc3545',
+          backgroundColor: 'rgba(220,53,69,0.2)',
+          fill: true,
+          tension: 0.25
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom' },
+        // opciones del plugin (misma duración para ambas series)
+        reveal: { duration: 2000 }
+      },
+      // Desactivamos la animación nativa para evitar “saltos”
+      animation: false,
+      scales: {
+        x: { title: { display: true, text: 'Fecha' } },
+        y: { title: { display: true, text: 'Importe (€)' }, beginAtZero: true }
+      }
+    }
+  });
+
+  // Si en algún momento actualizas data y quieres re-animar:
+  // window.__lineChart.options.plugins.reveal.duration = 2000;
+  // Chart.unregister(revealPlugin); Chart.register(revealPlugin); window.__lineChart.update('none');
+});
+</script>
+
+
+
+
+
+	</div>
+{% endblock %}
